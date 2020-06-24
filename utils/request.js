@@ -17,7 +17,6 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(
   (config) => {
-    console.log(config)
     config.headers.token = getToken()
     config.data = qs.stringify(config.data)
     return config
@@ -35,47 +34,21 @@ service.interceptors.response.use(
     if (response.request.responseType === 'blob') {
       return Promise.resolve(res.data)
     }
-    // if the custom code is not 20000, it is judged as an error.
+    // if the custom code is not 200, it is judged as an error.
     switch (res.code) {
       case 200:
         return Promise.resolve(res.data)
-      case 403:
-        // 无权限
-        Message({
-          message: res.msg,
-          type: 'error',
-          duration: 5 * 1000
-        })
-        return Promise.reject(res)
       case 401:
         // 未登录或过期
-        Message({
-          message: res.msg,
-          type: 'error',
-          duration: 5 * 1000
-        })
+        Message.error(res.msg)
         removeToken()
-        // router.replace({
-        //   path: '/login',
-        //   query: {
-        //     redirect: router.history.current.path
-        //   }
-        // })
         break
-      case 400:
-        // 参数错误
-        Message({
-          message: res.msg,
-          type: 'error',
-          duration: 5 * 1000
-        })
+      case 400: // 参数错误
+      case 403: // 无权限
+        Message.error(res.msg)
         return Promise.reject(res)
       default:
-        Message({
-          message: res.msg || '请求错误',
-          type: 'error',
-          duration: 5 * 1000
-        })
+        Message.error(res.msg || '请求错误')
         return Promise.reject(res)
     }
   },
