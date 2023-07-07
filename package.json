@@ -44,6 +44,6 @@
     "nodemon": "^2.0.12",
     "sass": "^1.36.0",
     "sass-loader": "^8.0.2",
-    "stylelint": "^13.13.1"
+    "stylelint": "^15.10.1"
   }
 }
